@@ -1,6 +1,26 @@
 
 import yfinance as yf
 import pandas as pd
+import psycopg2
+
+
+def connection_to_postgresql():
+    connection = psycopg2.connect(database="stock_data", user="postgres", password="Qwerty_12345", host="localhost", port=5432)
+    return connection.cursor()
+
+
+
+def get_company_names(company_data):
+    return company_data['Security']
+
+def get_tickers(company_data):
+    return company_data['Symbol']
+
+def get_sector(company_data):
+    return company_data['GICS Sector']
+
+def get_industry(company_data):
+    return company_data['GICS Sub-Industry']
 
 #get stock tickers
 def get_company_data():
@@ -11,5 +31,18 @@ def get_company_data():
 
 
 if __name__ == "__main__":
+
+    cursor=connection_to_postgresql()
+    cursor.execute("SELECT * from companies;")
+    # Fetch all rows from database
+    record = cursor.fetchall()
+
+    print("Data from Database:- ", record)
+
     company_data=get_company_data()
-    print(company_data.Symbol[0],company_data.Security[0])
+    list_of_companies=get_company_names(company_data)
+    list_of_tickers=get_tickers(company_data)
+    list_of_sector=get_sector(company_data)
+    list_of_industry=get_industry(company_data)
+    # for i in range(len(list_of_companies)):
+    #     print(list_of_companies[i],list_of_tickers[i],list_of_industry[i])
